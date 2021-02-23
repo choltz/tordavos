@@ -12,13 +12,14 @@ class CursesWrapper
     curs_set(0)
     noecho
     init_pair(1, 1, 0)
+
+    @window = Curses::Window.new(0, 0, 1, 2)
   end
 
   # Public Main event loop for this app. Collect entered text and hand control
   # to the caller to decide what to do with it.
   def event_loop
     begin
-      window    = Curses::Window.new(0, 0, 1, 2)
       query     = ''
       character = ''
 
@@ -26,25 +27,19 @@ class CursesWrapper
       # y = Curses.lines / 2
 
       loop do
-        window.setpos(0,0)
+        @window.setpos(0,0)
 
-        window.attron(color_pair(1)) { # red
-          window << "> #{query} "
+        @window.attron(color_pair(1)) { # red
+          @window << "> #{query} "
         }
 
-        results = yield(window, query)
-        results = results.map{ |result| "  #{result}" }
-                         .join("\n")
+        results = yield @window, query
 
-        window.setpos(1,0)
-        window << results
-        clrtoeol
-        window << "\n"
+        self.write_results results
+        self.window_cleanup
 
-        (window.maxy - window.cury).times {window.deleteln()}
-        window.refresh
-
-        character = window.getch.to_s
+        # Capture the next character
+        character = @window.getch.to_s
 
         if character == '127'
           query = query[0, query.length - 1]
@@ -60,5 +55,25 @@ class CursesWrapper
     ensure
       close_screen
     end
+  end
+
+  private
+
+  # Internal: Write results to the window.
+  def write_results(results)
+    @window.setpos(1,0)
+
+    results = results.map{ |result| "  #{result}" }
+      .join("\n")
+
+    @window << results
+  end
+
+  # a bit of cleanup for each time round the loop
+  def window_cleanup
+    clrtoeol
+    @window << "\n"
+    (@window.maxy - @window.cury).times { @window.deleteln() }
+    @window.refresh
   end
 end
