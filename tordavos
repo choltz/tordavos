@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+require './lib/tordavos.rb'
+
+Tordavos.listen

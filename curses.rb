@@ -47,15 +47,13 @@ class CursesLoop
 
         if character == '127'
           query = query[0, query.length - 1]
-          # query = query << "\b"
         else
           query << character
         end
+
       end
     ensure
       close_screen
     end
   end
 end
-
-CursesLoop.new.event_loop
