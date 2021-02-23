@@ -33,6 +33,8 @@ class CursesWrapper
         }
 
         results = yield(window, query)
+        results = results.map{ |result| "  #{result}" }
+                         .join("\n")
 
         window.setpos(1,0)
         window << results

@@ -10,7 +10,7 @@ class Tordavos
 
     curses.event_loop do |win, query|
       response = HTTParty.get"http://suggestqueries.google.com/complete/search?client=chrome&hl=en&gl=us&q=#{query}"
-      JSON.parse(response.body)[1].join("\n")
+      JSON.parse(response.body)[1]
     end
 
     puts curses.selection
