@@ -7,7 +7,7 @@ class Utils
     ->(array) { array.first }
   end
 
-  def self.get
+  def self.url_get
     httparty_get = ->(url) { HTTParty.get url }
 
     httparty_get >> self.json_parse
