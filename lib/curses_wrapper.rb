@@ -1,5 +1,4 @@
 require 'curses'
-require 'byebug'
 
 class CursesWrapper
   include Curses
@@ -14,14 +13,16 @@ class CursesWrapper
     init_pair(1, 1, 0)
 
     @window = Curses::Window.new(0, 0, 1, 2)
+    @window.keypad true
   end
 
   # Public Main event loop for this app. Collect entered text and hand control
   # to the caller to decide what to do with it.
   def event_loop
     begin
-      query     = ''
-      character = ''
+      query    = ''
+      char     = ''
+      selected = nil
 
       # x = Curses.cols / 2  # We will center our text
       # y = Curses.lines / 2
@@ -34,22 +35,28 @@ class CursesWrapper
         }
 
         results = yield @window, query
+        results = results.respond_to?(:call) ? results.call : results
 
-        self.write_results results.respond_to?(:call) ? results.call : results
+        self.write_results results, selected
         self.window_cleanup
 
-        # Capture the next character
-        character = @window.getch.to_s
+        # Capture the next char
+        char = @window.getch
 
-        if character == '127'
+        # close_screen
+        if char == 263 # backspace
           query = query[0, query.length - 1]
-        elsif character == '10'
+        elsif char == 10 # enter
           @selection = query
           break
-        elsif character == '27'
+        elsif char == Curses::Key::DOWN
+          selected = selected.nil? ? 0 : selected + 1
+        elsif char == Curses::Key::UP
+          selected = selected.nil? ? 0 : selected - 1
+        elsif char == 27 # esc
           break
         else
-          query << character
+          query << char
         end
       end
     ensure
@@ -60,11 +67,27 @@ class CursesWrapper
   private
 
   # Internal: Write results to the window.
-  def write_results(results)
+  def write_results(results, selected)
     @window.setpos(1,0)
 
-    results = results.map{ |result| "  #{result}" }
-      .join("\n")
+    if selected.nil?
+      results = results.map{ |result| "  #{result}" }
+                       .join("\n")
+    else
+      results = results.map.with_index { |result, index|
+        if selected == index
+          " *#{result}"
+        else
+          "  #{result}"
+        end
+      }.join("\n")
+
+      # results1 = results[0, selected].map{ |result| " #{result}" }.join("\n")
+      # results2 = results[selected + 1, results.length].map{ |result| " #{result}" }.join("\n")
+      # selected_results = "\n***#{results[selected, 1].first}                             \n"
+      # results = results1 + selected_results + results2
+    end
+    # @window.attron(color_pair(1)) { # red
 
     @window << results
   end
