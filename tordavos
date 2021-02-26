@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
 require './lib/tordavos.rb'
+require 'byebug'
 
-Tordavos.listen
+Tordavos.listen CursesWrapper.new

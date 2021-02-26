@@ -35,7 +35,7 @@ class CursesWrapper
 
         results = yield @window, query
 
-        self.write_results results
+        self.write_results results.respond_to?(:call) ? results.call : results
         self.window_cleanup
 
         # Capture the next character

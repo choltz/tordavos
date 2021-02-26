@@ -1,16 +1,16 @@
-require 'httparty'
-# require 'byebug'
-
+require          'httparty'
+require_relative 'utils'
 require_relative './curses_wrapper.rb'
 
 class Tordavos
+  URL = ->(query) { "http://suggestqueries.google.com/complete/search?client=chrome&hl=en&gl=us&q=#{query}" }
 
-  def self.listen
-    curses = CursesWrapper.new
-
+  def self.listen(curses)
     curses.event_loop do |win, query|
-      response = HTTParty.get"http://suggestqueries.google.com/complete/search?client=chrome&hl=en&gl=us&q=#{query}"
-      JSON.parse(response.body)[1]
+      Utils.value(query) >>
+      URL                >>
+      Utils.get          >>
+      Utils.second
     end
 
     puts curses.selection
