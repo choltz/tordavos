@@ -38,6 +38,9 @@ class Tordavos
     Curses.close_screen
   end
 
+  private
+
+  # Internal: Start a separate thread to query the data source for results.
   def data_source_event_loop
     Thread.new do
       old_query = ''
@@ -56,12 +59,12 @@ class Tordavos
     end
   end
 
-  private
-
   # Internal: Handle user input - perform specialized actions based on input.
   #
   # char - Character typed by user.
   def key_handler(char)
+    return if char.nil?
+
     if char == 127 # backspace
       @query = @query[0, @query.length - 1]
     # elsif char == 10 # enter
@@ -74,7 +77,7 @@ class Tordavos
     # elsif char == 27 # esc
     #   break
     else
-      @query << char if !char.nil?
+      @query << char
     end
   end
 end
