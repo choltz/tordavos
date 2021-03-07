@@ -7,11 +7,13 @@ class Tordavos
   include Curses
 
   def initialize
-    init_screen
-    start_color
-    curs_set(0)
-    noecho
-    init_pair(1, 1, 0)
+    Curses.init_screen
+    Curses.start_color
+    Curses.curs_set(0)
+    Curses.noecho
+    Curses.init_pair(COLOR_BLUE,COLOR_BLUE,COLOR_BLACK)
+    Curses.init_pair(COLOR_RED,COLOR_RED,COLOR_BLACK)
+
     Curses.stdscr.nodelay = 1
 
     @window = Curses::Window.new(0, 0, 1, 2)
@@ -34,14 +36,11 @@ class Tordavos
       loop do
         # Capture the next char
         char = Curses.stdscr.getch
+
         @window.setpos(0,0)
 
-        @window.attron(color_pair(1)) { # red
-          @window << "> #{@query}"
-        }
-        @window << '| '
-
-        self.write_results selected
+        self.display_input_query
+        self.display_results selected
         self.window_cleanup
 
         if char != old_char
@@ -63,11 +62,9 @@ class Tordavos
             @query << char if !char.nil?
           end
         end
-
-        # sleep 0.25
       end
     ensure
-      close_screen
+      Curses.close_screen
     end
   end
 
@@ -85,21 +82,29 @@ class Tordavos
           Utils.log(query)
         end
 
-        sleep 1
+        sleep 0.5
       end
     end
   end
 
   # a bit of cleanup for each time round the loop
   def window_cleanup
-    clrtoeol
+    Curses.clrtoeol
     @window << "\n"
     (@window.maxy - @window.cury).times { @window.deleteln() }
     @window.refresh
   end
 
+  def display_input_query
+    @window.attron(color_pair(COLOR_RED) | A_NORMAL) { # red
+      @window << "> #{@query}"
+    }
+
+    @window << '| '
+  end
+
   # Internal: Write results to the window.
-  def write_results(selected)
+  def display_results(selected)
     @window.setpos(1,0)
 
     if selected.nil?
@@ -115,6 +120,6 @@ class Tordavos
       }.join("\n")
     end
 
-    @window << output
+      @window << output
   end
 end
