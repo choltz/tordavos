@@ -19,33 +19,34 @@ class Tordavos
     begin
       char     = ''
       old_char = nil
-      selected = nil
+      # selected = nil
 
       loop do
-        char = Curses.stdscr.getch
+        char = @display.input
 
         @display.show_input_query(@query)
-        @display.show_results @results, selected
+        # @display.show_results @results, selected
+        @display.show_results @results
         @display.window_cleanup
 
         if char != old_char
           old_char = char.dup
+          @query << char if !char.nil?
 
-          # close_screen
-          if char == 127 # backspace
-            @query = @query[0, @query.length - 1]
-          elsif char == 10 # enter
-            @selection = @query
-            break
-          elsif char == Curses::Key::DOWN
-            selected = selected.nil? ? 0 : selected + 1
-          elsif char == Curses::Key::UP
-            selected = selected.nil? ? 0 : selected - 1
-          elsif char == 27 # esc
-            break
-          else
-            @query << char if !char.nil?
-          end
+          # if char == 127 # backspace
+          #   @query = @query[0, @query.length - 1]
+          # elsif char == 10 # enter
+          #   @selection = @query
+          #   break
+          # elsif char == Curses::Key::DOWN
+          #   selected = selected.nil? ? 0 : selected + 1
+          # elsif char == Curses::Key::UP
+          #   selected = selected.nil? ? 0 : selected - 1
+          # elsif char == 27 # esc
+          #   break
+          # else
+          #   @query << char if !char.nil?
+          # end
         end
 
         sleep 0.05 # don't let this loop spike the CPU.
