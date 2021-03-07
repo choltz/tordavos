@@ -37,8 +37,9 @@ class Tordavos
         @window.setpos(0,0)
 
         @window.attron(color_pair(1)) { # red
-          @window << "> #{@query} "
+          @window << "> #{@query}"
         }
+        @window << '| '
 
         self.write_results selected
         self.window_cleanup
@@ -79,12 +80,12 @@ class Tordavos
 
         if query != old_query
           old_query = query
-          # Utils.log query
           response  = HTTParty.get GOOGLE_SUGGEST_URL.call @query
           @results  = JSON.parse(response.body)[1]
+          Utils.log(query)
         end
 
-        # sleep 0.25
+        sleep 1
       end
     end
   end
