@@ -1,24 +1,14 @@
 require          'httparty'
 require          'curses'
 require_relative 'utils'
-require_relative './curses_wrapper.rb'
+require_relative 'display'
 
 class Tordavos
   include Curses
 
   def initialize
-    Curses.init_screen
-    Curses.start_color
-    Curses.curs_set(0)
-    Curses.noecho
-    Curses.init_pair(COLOR_BLUE,COLOR_BLUE,COLOR_BLACK)
-    Curses.init_pair(COLOR_RED,COLOR_RED,COLOR_BLACK)
-
-    Curses.stdscr.nodelay = 1
-
-    @window = Curses::Window.new(0, 0, 1, 2)
-    @window.keypad true
-    @query = ''
+    @display = Display.new
+    @query   = ''
     @results = []
 
     # spin off a fiber that looks at @query and gets a list of responses
@@ -32,14 +22,11 @@ class Tordavos
       selected = nil
 
       loop do
-        # Capture the next char
         char = Curses.stdscr.getch
 
-        @window.setpos(0,0)
-
-        self.display_input_query
-        self.display_results selected
-        self.window_cleanup
+        @display.show_input_query(@query)
+        @display.show_results @results, selected
+        @display.window_cleanup
 
         if char != old_char
           old_char = char.dup
@@ -60,6 +47,8 @@ class Tordavos
             @query << char if !char.nil?
           end
         end
+
+        sleep 0.05 # don't let this loop spike the CPU.
       end
     ensure
       Curses.close_screen
@@ -85,41 +74,5 @@ class Tordavos
         sleep 0.5
       end
     end
-  end
-
-  # a bit of cleanup for each time round the loop
-  def window_cleanup
-    Curses.clrtoeol
-    @window << "\n"
-    (@window.maxy - @window.cury).times { @window.deleteln() }
-    @window.refresh
-  end
-
-  def display_input_query
-    @window.attron(color_pair(COLOR_RED) | A_NORMAL) { # red
-      @window << "> #{@query}"
-    }
-
-    @window << '| '
-  end
-
-  # Internal: Write results to the window.
-  def display_results(selected)
-    @window.setpos(1,0)
-
-    if selected.nil?
-      output = @results.map{ |result| "  #{result}" }
-                       .join("\n")
-    else
-      output = @results.map.with_index { |result, index|
-        if selected == index
-          " *#{result}"
-        else
-          "  #{result}"
-        end
-      }.join("\n")
-    end
-
-      @window << output
   end
 end
