@@ -12,51 +12,33 @@ class Tordavos
     @query   = ''
     @results = []
 
-    # spin off a fiber that looks at @query and gets a list of responses
-    self.start_suggest_thread
+    data_source_event_loop
   end
 
+  # Public: Listen for user input and start of a Thread that
+  # returns a result set based on that input.
   def event_loop
-    begin
-      char     = ''
-      old_char = nil
-      # selected = nil
+    char     = ''
+    old_char = nil
+    # selected = nil
 
-      loop do
-        char = @display.input
+    loop do
+      char = @display.input || ''
+      @display.render query: @query, results: @results
 
-        @display.show_input_query(@query)
-        # @display.show_results @results, selected
-        @display.show_results @results
-        @display.window_cleanup
+      if char != old_char
+        old_char = char.dup
 
-        if char != old_char
-          old_char = char.dup
-
-          if char == 127 # backspace
-            @query = @query[0, @query.length - 1]
-          # elsif char == 10 # enter
-          #   @selection = @query
-          #   break
-          # elsif char == Curses::Key::DOWN
-          #   selected = selected.nil? ? 0 : selected + 1
-          # elsif char == Curses::Key::UP
-          #   selected = selected.nil? ? 0 : selected - 1
-          # elsif char == 27 # esc
-          #   break
-          else
-            @query << char if !char.nil?
-          end
-        end
-
-        sleep 0.05 # don't let this loop spike the CPU.
+        key_handler char
       end
-    ensure
-      Curses.close_screen
+
+      sleep 0.05 # don't let this loop spike the CPU.
     end
+  ensure
+    Curses.close_screen
   end
 
-  def start_suggest_thread
+  def data_source_event_loop
     Thread.new do
       old_query = ''
       source    = GoogleSuggest.new
@@ -71,6 +53,28 @@ class Tordavos
 
         sleep 0.5
       end
+    end
+  end
+
+  private
+
+  # Internal: Handle user input - perform specialized actions based on input.
+  #
+  # char - Character typed by user.
+  def key_handler(char)
+    if char == 127 # backspace
+      @query = @query[0, @query.length - 1]
+    # elsif char == 10 # enter
+    #   @selection = @query
+    #   break
+    # elsif char == Curses::Key::DOWN
+    #   selected = selected.nil? ? 0 : selected + 1
+    # elsif char == Curses::Key::UP
+    #   selected = selected.nil? ? 0 : selected - 1
+    # elsif char == 27 # esc
+    #   break
+    else
+      @query << char if !char.nil?
     end
   end
 end

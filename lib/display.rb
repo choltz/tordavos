@@ -23,6 +23,13 @@ class Display
     Curses.stdscr.getch
   end
 
+  # Public: Render the complete view output - input query and results.
+  def render(query:, results:)
+    show_input_query(query)
+    show_results results
+    window_cleanup
+  end
+
   # Public: Show the query the user is inputting.
   def show_input_query(query)
     @window.setpos(0,0)
