@@ -12,6 +12,7 @@ class Tordavos
     curs_set(0)
     noecho
     init_pair(1, 1, 0)
+    # Curses.stdscr.nodelay = 1
 
     @window = Curses::Window.new(0, 0, 1, 2)
     @window.keypad true
@@ -36,14 +37,12 @@ class Tordavos
           @window << "> #{@query} "
         }
 
-        # results = yield @window, query
-        # results = results.respond_to?(:call) ? results.call : results
         self.write_results selected
-
         self.window_cleanup
 
         # Capture the next char
         char = @window.getch
+        # char = Curses.stdscr.getch
 
         # close_screen
         if char == 263 # backspace
@@ -68,9 +67,18 @@ class Tordavos
 
   def start_suggest_thread
     Thread.new do
+      old_query = ''
+
       loop do
-        response = HTTParty.get GOOGLE_SUGGEST_URL.call @query
-        @results =  JSON.parse(response.body)[1]
+        query = @query.dup
+
+        if query != old_query
+          old_query = query
+          response  = HTTParty.get GOOGLE_SUGGEST_URL.call @query
+          @results  = JSON.parse(response.body)[1]
+
+          Utils.log(query)
+        end
 
         sleep 0.25
       end
