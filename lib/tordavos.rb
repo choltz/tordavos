@@ -12,7 +12,7 @@ class Tordavos
     curs_set(0)
     noecho
     init_pair(1, 1, 0)
-    # Curses.stdscr.nodelay = 1
+    Curses.stdscr.nodelay = 1
 
     @window = Curses::Window.new(0, 0, 1, 2)
     @window.keypad true
@@ -28,9 +28,12 @@ class Tordavos
   def event_loop
     begin
       char     = ''
+      old_char = nil
       selected = nil
 
       loop do
+        # Capture the next char
+        char = Curses.stdscr.getch
         @window.setpos(0,0)
 
         @window.attron(color_pair(1)) { # red
@@ -40,25 +43,27 @@ class Tordavos
         self.write_results selected
         self.window_cleanup
 
-        # Capture the next char
-        char = @window.getch
-        # char = Curses.stdscr.getch
+        if char != old_char
+          old_char = char.dup
 
-        # close_screen
-        if char == 263 # backspace
-          @query = @query[0, @query.length - 1]
-        elsif char == 10 # enter
-          @selection = @query
-          break
-        elsif char == Curses::Key::DOWN
-          selected = selected.nil? ? 0 : selected + 1
-        elsif char == Curses::Key::UP
-          selected = selected.nil? ? 0 : selected - 1
-        elsif char == 27 # esc
-          break
-        else
-          @query << char
+          # close_screen
+          if char == 127 # backspace
+            @query = @query[0, @query.length - 1]
+          elsif char == 10 # enter
+            @selection = @query
+            break
+          elsif char == Curses::Key::DOWN
+            selected = selected.nil? ? 0 : selected + 1
+          elsif char == Curses::Key::UP
+            selected = selected.nil? ? 0 : selected - 1
+          elsif char == 27 # esc
+            break
+          else
+            @query << char if !char.nil?
+          end
         end
+
+        # sleep 0.25
       end
     ensure
       close_screen
@@ -74,13 +79,12 @@ class Tordavos
 
         if query != old_query
           old_query = query
+          # Utils.log query
           response  = HTTParty.get GOOGLE_SUGGEST_URL.call @query
           @results  = JSON.parse(response.body)[1]
-
-          Utils.log(query)
         end
 
-        sleep 0.25
+        # sleep 0.25
       end
     end
   end
