@@ -1,9 +1,9 @@
-require          'httparty'
 require          'curses'
 require_relative 'utils'
 require_relative 'display'
-require_relative '../sources/google_suggest.rb'
+require_relative '../sources/google_suggest'
 
+# Main app class.
 class Tordavos
   include Curses
 

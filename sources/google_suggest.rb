@@ -1,3 +1,4 @@
+require          'httparty'
 require_relative '../lib/utils'
 
 # Public: Google suggest data source.
