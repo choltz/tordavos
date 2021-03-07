@@ -25,8 +25,6 @@ class Tordavos
     self.start_suggest_thread
   end
 
-  GOOGLE_SUGGEST_URL = ->(query) { "http://suggestqueries.google.com/complete/search?client=chrome&hl=en&gl=us&q=#{query}" }
-
   def event_loop
     begin
       char     = ''
@@ -69,6 +67,8 @@ class Tordavos
   end
 
   def start_suggest_thread
+    url = ->(query) { "http://suggestqueries.google.com/complete/search?client=chrome&hl=en&gl=us&q=#{query}" }
+
     Thread.new do
       old_query = ''
 
@@ -77,7 +77,7 @@ class Tordavos
 
         if query != old_query
           old_query = query
-          response  = HTTParty.get GOOGLE_SUGGEST_URL.call @query
+          response  = HTTParty.get url.call @query
           @results  = JSON.parse(response.body)[1]
           Utils.log(query)
         end
