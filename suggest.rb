@@ -12,7 +12,7 @@ class Suggest
     loop do
       input = listen
 
-      if input == "\u007F"
+      if input == "\u007F" # backspace
         query = query[0, query.length - 1]
       else
         query << input
