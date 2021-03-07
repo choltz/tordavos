@@ -1,5 +1,5 @@
 class Utils
-  def self.log(text)
+  def self.log(text = '')
     File.open("#{self.root}/log/debug.log", 'a') do |file|
       file.write "#{text}\n"
     end
