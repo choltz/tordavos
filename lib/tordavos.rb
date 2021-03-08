@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require          'curses'
 require_relative 'utils'
 require_relative 'display'
@@ -29,7 +31,7 @@ class Tordavos
       if char != old_char
         old_char = char.dup
 
-        key_handler char
+        @query = key_handler char, @query
       end
 
       sleep 0.05 # don't let this loop spike the CPU.
@@ -62,11 +64,11 @@ class Tordavos
   # Internal: Handle user input - perform specialized actions based on input.
   #
   # char - Character typed by user.
-  def key_handler(char)
+  def key_handler(char, query)
     return if char.nil?
 
     if char == 127 # backspace
-      @query = @query[0, @query.length - 1]
+      query[0, query.length - 1]
     # elsif char == 10 # enter
     #   @selection = @query
     #   break
@@ -77,7 +79,7 @@ class Tordavos
     # elsif char == 27 # esc
     #   break
     else
-      @query << char
+      query.dup << char
     end
   end
 end

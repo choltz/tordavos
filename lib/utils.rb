@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Utils
   def self.log(text = '')
     File.open("#{self.root}/log/debug.log", 'a') do |file|
