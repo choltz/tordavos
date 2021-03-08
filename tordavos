@@ -1,9 +1,0 @@
-#!/usr/bin/env ruby
-
-require './app/controllers/application_controller'
-require './config/application'
-require 'byebug'
-
-config = Config.new
-app    = Application.new config
-app.start

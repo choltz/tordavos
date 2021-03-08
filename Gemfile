@@ -7,5 +7,6 @@ end
 
 group :development, :test do
   gem 'byebug'
+  gem 'minitest'
   gem 'rubocop'
 end
