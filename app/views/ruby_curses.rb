@@ -3,7 +3,7 @@
 require 'curses'
 
 # Public: Handle terminal emulator display logic.
-class Display
+class RubyCurses
   include Curses
 
   attr_accessor :window

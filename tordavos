@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
-require './lib/tordavos.rb'
+
+require './app/controllers/application'
 require 'byebug'
 
-Tordavos.new.event_loop
+app = Application.new
+app.start

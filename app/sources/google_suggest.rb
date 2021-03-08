@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 require          'httparty'
-require_relative '../lib/utils'
+require_relative '../../lib/utils'
 
-# Public: Google suggest data source.
+# Public: Query the Google suggest endpoint with the given query.
 class GoogleSuggest
   URL = ->(query) { "http://suggestqueries.google.com/complete/search?client=chrome&hl=en&gl=us&q=#{query}" }
 
@@ -14,6 +14,8 @@ class GoogleSuggest
   # Returns and array of strings.
   def data(query)
     response = HTTParty.get URL.call query
-    JSON.parse(response.body)[1]
+    parsed   = JSON.parse(response.body)
+
+    parsed.nil? ? [] : parsed[1]
   end
 end
