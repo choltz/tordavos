@@ -8,21 +8,23 @@ class RubyCurses
 
   attr_accessor :window
 
-  # Public: Constructor - initialize Curses environment.
-  def initialize
-    Curses.init_screen
-    Curses.start_color
-    Curses.curs_set(0)
-    Curses.noecho
-    Curses.init_pair(COLOR_BLUE, COLOR_BLUE, COLOR_BLACK)
-    Curses.init_pair(COLOR_RED, COLOR_RED, COLOR_BLACK)
-    Curses.stdscr.nodelay = 1
+  # Public: Constructor - initialize @renderer environment.
+  def initialize(renderer = Curses)
+    @renderer = renderer
 
-    @window = Curses::Window.new(0, 0, 1, 2)
+    @renderer.init_screen
+    @renderer.start_color
+    @renderer.curs_set(0)
+    @renderer.noecho
+    @renderer.init_pair(COLOR_BLUE, COLOR_BLUE, COLOR_BLACK)
+    @renderer.init_pair(COLOR_RED, COLOR_RED, COLOR_BLACK)
+    @renderer.stdscr.nodelay = 1
+
+    @window = @renderer::Window.new(0, 0, 1, 2)
   end
 
   def input
-    Curses.stdscr.getch
+    @renderer.stdscr.getch
   end
 
   # Public: Render the complete view output - input query and results.
@@ -64,7 +66,7 @@ class RubyCurses
 
   # a bit of cleanup for each time round the loop
   def window_cleanup
-    Curses.clrtoeol
+    @renderer.clrtoeol
     @window << "\n"
     (@window.maxy - @window.cury).times { @window.deleteln() }
     @window.refresh
