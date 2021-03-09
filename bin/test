@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
-require 'minitest/autorun'
-require 'byebug'
+require_relative '../test/test_helper'
 
 Dir.glob("test/**/*test.rb") do |path|
   require_relative "../#{path}"
