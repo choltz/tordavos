@@ -34,6 +34,8 @@ class RubyCurses
     window_cleanup
   end
 
+  private
+
   # Public: Show the query the user is inputting.
   def show_input_query(query)
     @window.setpos(0,0)

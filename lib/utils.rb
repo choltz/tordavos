@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class Utils
-  def self.log(text = '')
-    File.open("#{self.root}/log/debug.log", 'a') do |file|
+  def self.log(text = '', path = "#{Utils.root}/log/debug.log")
+    File.open(path, 'a') do |file|
       file.write "#{text}\n"
     end
   end

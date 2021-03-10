@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require          'curses'
-require_relative '../../lib/utils'
+require_relative 'lib/utils'
 
 # Public: This a controller in as much as it is the glue between the display
 # code (view) and the data source (model). That is where the similarity to MVC

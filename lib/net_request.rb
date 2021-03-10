@@ -2,7 +2,7 @@
 require 'httparty'
 
 # Public: Simple wrapper around http(s) requests. This will make it easier to
-# interchange net request logic.
+# swap in different network implementations.
 class NetRequest
   def initialize(request_library = HTTParty)
     @request_library = request_library
