@@ -4,6 +4,6 @@ require_relative '../app'
 require_relative '../config/application'
 require 'byebug'
 
-config = Config.new
-app    = Application.new config
+config  = Config::Application.new
+app     = App.new(config)
 app.start

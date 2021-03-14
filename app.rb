@@ -10,8 +10,10 @@ require_relative 'lib/utils'
 # Rather than define route end points, this class runs two event loops: one
 # listens for user input from the display view object and then other listens
 # for data queries run against the user input.
-class Application
+class App
   include Curses
+
+  attr_reader :test_event_loop
 
   # Constructor: Establish instance variables and app configuration.
   def initialize(config)
@@ -21,8 +23,12 @@ class Application
   end
 
   def start
-    data_source_event_loop
-    view_event_loop
+    if @config.env == :production
+      data_source_event_loop
+      view_event_loop
+    elsif @config.env == :test
+      @test_event_loop = true
+    end
   end
 
   private
