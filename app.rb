@@ -23,10 +23,9 @@ class App
   end
 
   def start
-    if @config.env == :production
       data_source_event_loop
       view_event_loop
-    elsif @config.env == :test
+    if @config.env == :test
       @test_event_loop = true
     end
   end
@@ -46,6 +45,8 @@ class App
           @results = @config.source.data(query)
           old_query = query
         end
+
+        break if @config.env == :test # unit tests get one loop iteration
 
         sleep 0.5
       end
@@ -67,6 +68,8 @@ class App
 
           @query = key_handler char, @query
         end
+
+        break if @config.env == :test # unit tests get one loop iteration
 
         sleep 0.05 # don't let this loop spike the CPU.
       end
