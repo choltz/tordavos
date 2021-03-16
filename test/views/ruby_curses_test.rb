@@ -36,4 +36,13 @@ class RubyCursesTest < Minitest::Test
     assert_equal [:clrtoeol], mock.method_results
   end
 
+  def test_terminate
+    mock        = MockRubyCurses
+    ruby_curses = RubyCurses.new(mock)
+
+    mock.clear_methods
+    ruby_curses.terminate
+
+    assert_equal [:close_screen], mock.method_results
+  end
 end

@@ -23,6 +23,7 @@ class RubyCurses
     @window = @renderer::Window.new(0, 0, 1, 2)
   end
 
+  # Public: Capture input data.
   def input
     @renderer.stdscr.getch
   end
@@ -32,6 +33,11 @@ class RubyCurses
     show_input_query(query)
     show_results results
     window_cleanup
+  end
+
+  # Public: Finish out the UI session.
+  def terminate
+    @renderer.close_screen
   end
 
   private
@@ -66,7 +72,7 @@ class RubyCurses
     @window << output
   end
 
-  # a bit of cleanup for each time round the loop
+  # Internal:  A bit of cleanup for each time round the loop
   def window_cleanup
     @renderer.clrtoeol
     @window << "\n"

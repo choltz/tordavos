@@ -1,7 +1,16 @@
 class MockRubyCurses
-  attr_accessor :input
+  attr_accessor :input,
+                :method_results
+
+  def initialize
+    @method_results = []
+  end
 
   def render(*args)
+  end
+
+  def terminate
+    @method_results << 'terminate'
   end
 
   # Public: Mock curses render object.

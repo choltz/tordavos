@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require          'curses'
 require_relative 'lib/utils'
 
 # Public: This a controller in as much as it is the glue between the display
@@ -11,8 +10,6 @@ require_relative 'lib/utils'
 # listens for user input from the display view object and then other listens
 # for data queries run against the user input.
 class App
-  include Curses
-
   attr_reader :test_event_loop
 
   # Constructor: Establish instance variables and app configuration.
@@ -23,8 +20,9 @@ class App
   end
 
   def start
-      data_source_event_loop
-      view_event_loop
+    data_source_event_loop
+    view_event_loop
+
     if @config.env == :test
       @test_event_loop = true
     end
@@ -36,7 +34,6 @@ class App
   def data_source_event_loop
     Thread.new do
       old_query = ''
-      # source    = GoogleSuggest.new
 
       loop do
         query = @query.dup
@@ -57,7 +54,6 @@ class App
     def view_event_loop
       char     = ''
       old_char = nil
-      # selected = nil
 
       loop do
         char = @config.view.input || ''
@@ -65,8 +61,7 @@ class App
 
         if char != old_char
           old_char = char.dup
-
-          @query = key_handler char, @query
+          @query   = key_handler char, @query
         end
 
         break if @config.env == :test # unit tests get one loop iteration
@@ -74,7 +69,7 @@ class App
         sleep 0.05 # don't let this loop spike the CPU.
       end
     ensure
-      Curses.close_screen
+      @config.view.terminate
     end
   end
 
