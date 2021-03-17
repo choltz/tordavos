@@ -14,9 +14,9 @@ class App
 
   # Constructor: Establish instance variables and app configuration.
   def initialize(config)
-    @config  = config
-    @query   = ''
-    @results = []
+    @config      = config
+    @query       = ''
+    @results     = []
   end
 
   def start
@@ -57,11 +57,13 @@ class App
 
       loop do
         char = @config.view.input || ''
+
         @config.view.render query: @query, results: @results
 
         if char != old_char
           old_char = char.dup
-          @query   = key_handler char, @query
+          @query   = @config.key_handler.on_key_press char:  char,
+                                                      query: @query
         end
 
         break if @config.env == :test # unit tests get one loop iteration
@@ -70,28 +72,6 @@ class App
       end
     ensure
       @config.view.terminate
-    end
-  end
-
-  # Internal: Handle user input - perform specialized actions based on input.
-  #
-  # char - Character typed by user.
-  def key_handler(char, query)
-    return if char.nil?
-
-    if char == 127 # backspace
-      query[0, query.length - 1]
-    # elsif char == 10 # enter
-    #   @selection = @query
-    #   break
-    # elsif char == Curses::Key::DOWN
-    #   selected = selected.nil? ? 0 : selected + 1
-    # elsif char == Curses::Key::UP
-    #   selected = selected.nil? ? 0 : selected - 1
-    # elsif char == 27 # esc
-    #   break
-    else
-      query.dup << char
     end
   end
 end

@@ -19,6 +19,7 @@ class RubyCurses
     @renderer.init_pair(COLOR_BLUE, COLOR_BLUE, COLOR_BLACK)
     @renderer.init_pair(COLOR_RED, COLOR_RED, COLOR_BLACK)
     @renderer.stdscr.nodelay = 1
+    @renderer.stdscr.keypad = true
 
     @window = @renderer::Window.new(0, 0, 1, 2)
   end
@@ -26,6 +27,7 @@ class RubyCurses
   # Public: Capture input data.
   def input
     @renderer.stdscr.getch
+    # @renderer.stdscr.getstr
   end
 
   # Public: Render the complete view output - input query and results.

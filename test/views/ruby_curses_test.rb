@@ -11,7 +11,7 @@ class RubyCursesTest < Minitest::Test
 
     RubyCurses.new(mock)
 
-    expected = [:init_screen, :start_color, :curs_set, :noecho, :init_pair, :init_pair, :stdscr]
+    expected = [:init_screen, :start_color, :curs_set, :noecho, :init_pair, :init_pair, :stdscr, :stdscr]
     assert_equal expected, mock.method_results
   end
 
