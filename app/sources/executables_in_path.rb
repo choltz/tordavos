@@ -4,6 +4,8 @@ require_relative '../../lib/utils'
 
 # Public: Query the Google suggest endpoint with the given query.
 class ExecutablesInPath
+  attr_accessor :results
+
   # Constructor
   def initialize
     @data = `/bin/bash -c "compgen -c"`.split("\n")
