@@ -9,8 +9,10 @@ class RubyCurses
   attr_accessor :window
 
   # Public: Constructor - initialize @renderer environment.
-  def initialize(renderer = Curses)
-    @renderer = renderer
+  def initialize(renderer: Curses, config: nil)
+    @config    = config
+    @renderer  = renderer
+    @listeners = {}
 
     @renderer.init_screen
     @renderer.start_color
@@ -22,18 +24,25 @@ class RubyCurses
     @renderer.stdscr.keypad = true
 
     @window = @renderer::Window.new(0, 0, 1, 2)
+
+    self.event_loop
+  end
+
+  def add_event_listener(name, &block)
+    @listeners[name] = block
   end
 
   # Public: Capture input data.
   def input
     @renderer.stdscr.getch
-    # @renderer.stdscr.getstr
   end
 
   # Public: Render the complete view output - input query and results.
-  def render(query:, results:)
+  # def render(query:, results:)
+  def render(query:)
     show_input_query(query)
-    show_results results
+    # show_results results
+    show_results
     window_cleanup
   end
 
@@ -43,6 +52,34 @@ class RubyCurses
   end
 
   private
+
+  # Public: Listen for user input and start of a Thread that
+  # returns a result set based on that input.
+  def event_loop
+    char     = ''
+    old_char = nil
+
+    loop do
+      char = self.input || ''
+
+      # self.render query: @query, results: @results
+      self.render query: @query
+
+      if char != old_char
+        old_char = char.dup
+
+        (@listeners['key-press'] || []).each do |block|
+          block.call char
+        end
+      end
+
+      break if @config.env == :test # unit tests get one loop iteration
+
+      sleep 0.05 # don't let this loop spike the CPU.
+    end
+  ensure
+    self.terminate
+  end
 
   # Public: Show the query the user is inputting.
   def show_input_query(query)
@@ -55,12 +92,17 @@ class RubyCurses
   end
 
   # Public: Write results to the window.
-  def show_results(results)
+  # def show_results(results)
+  def show_results
     @window.setpos(1,0)
 
     # if selected.nil?
-      output = results.map{ |result| "  #{result}" }
-                      .join("\n")
+
+      # output = results.map{ |result| "  #{result}" }
+                      # .join("\n")
+
+    output = 'Buh'
+
     # else
     #   output = results.map.with_index { |result, index|
     #     if selected == index

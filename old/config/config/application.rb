@@ -15,7 +15,7 @@ module Config
     def initialize
       @env         = :production
       @key_handler = RubyCursesKeyHandler.new(Curses)
-      @view        = RubyCurses.new(Curses)
+      @view        = RubyCurses.new(renderer: Curses, config: self)
       @source      = GoogleSuggest.new
     end
   end

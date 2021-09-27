@@ -6,6 +6,9 @@ class MockRubyCurses
     @method_results = []
   end
 
+  def add_event_listener(listener, &block)
+  end
+
   def render(*args)
   end
 

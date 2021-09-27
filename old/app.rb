@@ -17,11 +17,17 @@ class App
     @config      = config
     @query       = ''
     @results     = []
+
+    # Register view event listener
+    @config.view.add_event_listener('key-press') do |char|
+      @query = @config.key_handler.on_key_press char:  char,
+                                                query: @query
+    end
   end
 
   def start
     data_source_event_loop
-    view_event_loop
+    # view_event_loop
 
     if @config.env == :test
       @test_event_loop = true
@@ -51,27 +57,27 @@ class App
 
     # Public: Listen for user input and start of a Thread that
     # returns a result set based on that input.
-    def view_event_loop
-      char     = ''
-      old_char = nil
+    # def view_event_loop
+    #   char     = ''
+    #   old_char = nil
 
-      loop do
-        char = @config.view.input || ''
+    #   loop do
+    #     char = @config.view.input || ''
 
-        @config.view.render query: @query, results: @results
+    #     @config.view.render query: @query, results: @results
 
-        if char != old_char
-          old_char = char.dup
-          @query   = @config.key_handler.on_key_press char:  char,
-                                                      query: @query
-        end
+    #     if char != old_char
+    #       old_char = char.dup
+    #       @query   = @config.key_handler.on_key_press char:  char,
+    #                                                   query: @query
+    #     end
 
-        break if @config.env == :test # unit tests get one loop iteration
+    #     break if @config.env == :test # unit tests get one loop iteration
 
-        sleep 0.05 # don't let this loop spike the CPU.
-      end
-    ensure
-      @config.view.terminate
-    end
+    #     sleep 0.05 # don't let this loop spike the CPU.
+    #   end
+    # ensure
+    #   @config.view.terminate
+    # end
   end
 end

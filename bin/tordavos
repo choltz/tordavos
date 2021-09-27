@@ -1,9 +1,13 @@
 #!/usr/bin/env ruby
 
-require_relative '../app'
-require_relative '../config/application'
+# require_relative '../app'
+# require_relative '../config/application'
 require 'byebug'
 
-config  = Config::Application.new
-app     = App.new(config)
-app.start
+require_relative '../app'
+
+app = App.new
+
+# config  = Config::Application.new
+# app     = App.new(config)
+# app.start
