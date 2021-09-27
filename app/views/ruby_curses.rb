@@ -43,7 +43,13 @@ class RubyCurses
 
       if char != old_char
         old_char = char
-        @query   = "#{@query}#{char}"
+
+        if char == 263
+          @query = @query[0, @query.length - 1]
+        else
+          @query = "#{@query}#{char}"
+        end
+
         @results = @query_update_callback.call char: char, query: @query
       end
 
@@ -70,8 +76,8 @@ class RubyCurses
       @window << "> #{query}"
     }
 
-    # @window << '█' # simulated caret for now.
-    @window << '|' # simulated caret for now.
+    # @window << '█ ' # simulated caret for now.
+    @window << '| ' # simulated caret for now.
   end
 
   # Public: Write results to the window.
