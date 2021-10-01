@@ -13,11 +13,8 @@ class App
     # @source = ExecutablesInPath.new
 
     view = RubyCurses.new
-    # hide_cursor
     input_listener view, @source
     view.input_loop
-  ensure
-    # show_cursor
   end
 
   private
@@ -30,7 +27,7 @@ class App
     old_query = ''
 
     Thread.new do
-      while true do
+      loop do
         if old_query != view.query
           view.results = source.data(view.query)
           Utils.log(view.results)
@@ -42,12 +39,4 @@ class App
       end
     end
   end
-
-  # def hide_cursor
-  #   system 'tput civis'
-  # end
-
-  # def show_cursor
-  #   system 'tput cnorm'
-  # end
 end

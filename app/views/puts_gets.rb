@@ -52,4 +52,12 @@ class PutsGets
 
     input
   end
+
+  # def hide_cursor
+  #   system 'tput civis'
+  # end
+
+  # def show_cursor
+  #   system 'tput cnorm'
+  # end
 end
