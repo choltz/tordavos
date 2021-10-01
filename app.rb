@@ -12,29 +12,42 @@ class App
     @source   = GoogleSuggest.new
     # @source = ExecutablesInPath.new
 
-    # view = RubyCurses.new
-    hide_cursor
-    view = PutsGets.new
-    view.query_update_callback(&method(:on_query_update))
-    view.event_loop
+    view = RubyCurses.new
+    # hide_cursor
+    input_listener view, @source
+    view.input_loop
   ensure
-    show_cursor
+    # show_cursor
   end
 
   private
 
-  def hide_cursor
-    system 'tput civis'
+  # Internal: Asynchronously check the view's current query, pass that along
+  # to the source object and get the results. Throttle the loop so it doesn't
+  # spike the cpu or make too many requests to the source. Only check the source
+  # if the query has changed.
+  def input_listener(view, source)
+    old_query = ''
+
+    Thread.new do
+      while true do
+        if old_query != view.query
+          view.results = source.data(view.query)
+          Utils.log(view.results)
+
+          old_query = view.query
+        end
+
+        sleep(0.5)
+      end
+    end
   end
 
-  def on_query_update(char:, query:)
-    @query = query
-    @source.query = query
+  # def hide_cursor
+  #   system 'tput civis'
+  # end
 
-    @source.results
-  end
-
-  def show_cursor
-    system 'tput cnorm'
-  end
+  # def show_cursor
+  #   system 'tput cnorm'
+  # end
 end

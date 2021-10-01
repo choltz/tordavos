@@ -7,10 +7,13 @@ require_relative '../../lib/utils'
 class RubyCurses
   include Curses
 
-  attr_accessor :window
+  attr_accessor :last_updated,
+                :query,
+                :results,
+                :window
 
   def initialize
-    @query_update_callback = nil
+    # @query_update_callback = nil
     @query                 = ''
     @results               = []
 
@@ -26,13 +29,9 @@ class RubyCurses
     @window = Curses::Window.new(0, 0, 1, 2)
   end
 
-  def query_update_callback(&block)
-    @query_update_callback = block
-  end
-
   # Public: Listen for user input and start of a Thread that
   # returns a result set based on that input.
-  def event_loop
+  def input_loop
     char     = ''
     old_char = nil
 
@@ -49,8 +48,6 @@ class RubyCurses
         else
           @query = "#{@query}#{char}"
         end
-
-        @results = @query_update_callback.call char: char, query: @query
       end
 
       sleep 0.05 # don't let this loop spike the CPU.

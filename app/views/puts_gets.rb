@@ -2,32 +2,36 @@ require_relative '../../lib/utils'
 
 # Public: Handle terminal emulator display logic.
 class PutsGets
+  attr_accessor :last_updated,
+                :query,
+                :results
 
   def initialize
-    @query_update_callback = nil
+    @query   = ''
+    @results = []
   end
 
-  def query_update_callback(&block)
-    @query_update_callback = block
-  end
-
-  def event_loop
-    query = ''
+  def input_loop
+    # query = ''
 
     loop do
-      results = @query_update_callback.call char: nil, query: query
-      input   = listen
+      # results = @query_update_callback.call char: nil, query: query
+      # results = []
+
+      # puts "\e[H\e[2J"
+      puts `clear`
+      puts "Run: #{@query}"
+      puts '--------------------'
+      puts @results[0,10]
+
+      input = listen
+      @last_updated = DateTime.now
 
       if input == "\u007F" # backspace
-        query = query[0, query.length - 1]
+        @query = @query[0, query.length - 1]
       else
-        query << input
+        @query << input
       end
-
-      puts "\e[H\e[2J"
-      puts "Run: #{query}"
-      puts '--------------------'
-      puts results[0,10]
 
       # print input.chr
 
@@ -35,7 +39,7 @@ class PutsGets
     end
 
     puts
-    puts query
+    puts @query
   end
 
   def listen
