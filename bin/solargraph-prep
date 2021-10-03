@@ -1,0 +1,5 @@
+#!/bin/bash
+solargraph download-core
+solargraph scan -v
+solargraph bundle
+yard gems

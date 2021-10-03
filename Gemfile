@@ -6,6 +6,8 @@ group :production, :development, :test do
 end
 
 group :development, :test do
+  gem 'solargraph'
+  gem 'amazing_print'
   gem 'byebug'
   gem 'minitest'
   gem 'rubocop'
