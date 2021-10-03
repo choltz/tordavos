@@ -16,7 +16,7 @@ class ExecutablesInPath
   # query - String passed used to filter results.
   #
   # Returns and array of strings.
-  def data(query)
+  def call(query)
     return @data if Utils.blank?(query)
 
     @data.filter { |d| d =~ /#{query}/ }.uniq

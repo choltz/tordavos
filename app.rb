@@ -8,11 +8,10 @@ require_relative 'lib/utils'
 
 class App
   def initialize
-    @query    = ''
-    @source   = GoogleSuggest.new
-    # @source = ExecutablesInPath.new
-
+    # @source   = GoogleSuggest.new
+    @source = ExecutablesInPath.new
     view = RubyCurses.new
+
     input_listener view, @source
     view.input_loop
   end
@@ -29,13 +28,11 @@ class App
     Thread.new do
       loop do
         if old_query != view.query
-          view.results = source.data(view.query)
-          Utils.log(view.results)
-
-          old_query = view.query
+          view.results = source.call view.query
+          old_query    = view.query
         end
 
-        sleep(0.5)
+        sleep 0.5
       end
     end
   end

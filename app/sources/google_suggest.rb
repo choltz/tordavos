@@ -19,7 +19,7 @@ class GoogleSuggest
   # query - String passed to Google Suggest for a set of related results.
   #
   # Returns and array of strings.
-  def data(query)
+  def call(query)
     response = @net_request.get URL.call query
     parsed   = JSON.parse(response.body)
 
